@@ -238,6 +238,7 @@ function closePalette(e) {
 }
 
 function savePalette(e) {
+  const popup = saveContainer.children[0]
   saveContainer.classList.remove("active")
   popup.classList.add("active")
   const name = saveInput.value
