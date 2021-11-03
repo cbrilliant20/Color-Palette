@@ -43,9 +43,24 @@ function checkTextContrast(color, text) {
 }
 
 function colorizeSliders(color, hue, brightness, saturation) {
+  // Hue Scale
+
+  hue.style.backgroundImage = `linear-gradient(to right, rgb(204,75,75), rgb(204,204,75), rgb(75,204,75), rgb(75,204,204), rgb(75,75,204), rgb(204,75,204), rgb(204,75,75))`
+
+  // Brightness Scale
+  const midBright = color.set("hsl.l", 0.5)
+  const scaleBright = chroma.scale(["black", midBright, "white"])
+  brightness.style.backgroundImage = `linear-gradient(to right, ${scaleBright(
+    0
+  )}, ${scaleBright(0.5)}, ${scaleBright(1)})`
+
   // Saturation Scale
   const noSat = color.set("hsl.s", 0)
   const fullSat = color.set("hsl.s", 1)
+  const scaleSat = chroma.scale([noSat, color, fullSat])
+  saturation.style.backgroundImage = `linear-gradient(to right, ${scaleSat(
+    0
+  )}, ${scaleSat(1)})`
 }
 
 randomColors()
