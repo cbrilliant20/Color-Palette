@@ -23,7 +23,12 @@ function randomColors() {
   colorDivs.forEach((div, index) => {
     const hexText = div.children[0]
     const randomColor = generateHex()
-    initialColors.push(chroma(randomColor).hex())
+    if (div.classList.contains("locked")) {
+      initialColors.push(hexText.innerText)
+      return
+    } else {
+      initialColors.push(chroma(randomColor).hex())
+    }
     // Add to background
     div.style.backgroundColor = randomColor
     hexText.innerText = randomColor
@@ -49,7 +54,7 @@ function randomColors() {
 randomColors()
 function checkTextContrast(color, text) {
   const luminance = chroma(color).luminance()
-  if (luminance > 0.75) {
+  if (luminance > 0.8) {
     text.style.color = "black"
   } else {
     text.style.color = "white"
@@ -146,6 +151,19 @@ function openAdjustmentPanel(index) {
 function closeAdjustmentPanel(index) {
   sliderContainers[index].classList.remove("active")
 }
+
+function lockLayer(e, index) {
+  const lockSVG = e.target.children[0]
+  const activeBg = colorDivs[index]
+  activeBg.classList.toggle("locked")
+
+  if (lockSVG.classList.contains("fa-lock-open")) {
+    e.target.innerHTML = '<i class="fas fa-lock"></i>'
+  } else {
+    e.target.innerHTML = '<i class="fas fa-lock-open"></i>'
+  }
+}
+
 // Event Listeners
 generateButton.addEventListener("click", randomColors)
 
@@ -180,5 +198,11 @@ adjustButton.forEach((button, index) => {
 closeAdjustments.forEach((button, index) => {
   button.addEventListener("click", () => {
     closeAdjustmentPanel(index)
+  })
+})
+
+lockButton.forEach((button, index) => {
+  button.addEventListener("click", (e) => {
+    lockLayer(e, index)
   })
 })
