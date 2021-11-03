@@ -12,7 +12,9 @@ body {
 button {
   font-family: Poppins, sans-serif;
 }
-
+h2 {
+  text-transform: uppercase;
+}
 path,
 i,
 svg {

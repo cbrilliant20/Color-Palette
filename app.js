@@ -83,8 +83,26 @@ function hslControls(e) {
 
 randomColors()
 
+function updateTextUI(index) {
+  const activeDiv = colorDivs[index]
+  const color = chroma(activeDiv.style.backgroundColor)
+  const textHex = activeDiv.querySelector("h2")
+  const icons = activeDiv.querySelectorAll(".controls button")
+  textHex.innerText = color.hex()
+  checkTextContrast(color, textHex)
+  for (icon of icons) {
+    checkTextContrast(color, icon)
+  }
+}
+
 // Event Listeners
 sliders.forEach((slider) => {
   slider.addEventListener("input", hslControls)
 })
 
+colorDivs.forEach((div, index) => {
+  console.log(div)
+  div.addEventListener("change", () => {
+    updateTextUI(index)
+  })
+})
