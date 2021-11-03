@@ -3,6 +3,11 @@ const colorDivs = document.querySelectorAll(".color")
 const generateButton = document.querySelector(".generate")
 const sliders = document.querySelectorAll('input[type="range"]')
 const currentHexes = document.querySelectorAll(".color h2")
+const popup = document.querySelector(".copy-container")
+const adjustButton = document.querySelectorAll(".adjust")
+const closeAdjustments = document.querySelectorAll(".close-adjustment")
+const sliderContainers = document.querySelectorAll(".sliders")
+console.log(sliderContainers)
 let initialColors
 
 // Functions
@@ -15,7 +20,6 @@ function generateHex() {
 
 function randomColors() {
   initialColors = []
-
   colorDivs.forEach((div, index) => {
     const hexText = div.children[0]
     const randomColor = generateHex()
@@ -31,14 +35,13 @@ function randomColors() {
     const hue = sliders[0]
     const brightness = sliders[1]
     const saturation = sliders[2]
-
     colorizeSliders(color, hue, brightness, saturation)
   })
   //Reset Inputs
   resetInputs()
 }
-randomColors()
 
+randomColors()
 function checkTextContrast(color, text) {
   const luminance = chroma(color).luminance()
   if (luminance > 0.5) {
@@ -51,14 +54,12 @@ function checkTextContrast(color, text) {
 function colorizeSliders(color, hue, brightness, saturation) {
   // Hue Scale
   hue.style.backgroundImage = `linear-gradient(to right, rgb(204,75,75), rgb(204,204,75), rgb(75,204,75), rgb(75,204,204), rgb(75,75,204), rgb(204,75,204), rgb(204,75,75))`
-
   // Brightness Scale
   const midBright = color.set("hsl.l", 0.5)
   const scaleBright = chroma.scale(["black", midBright, "white"])
   brightness.style.backgroundImage = `linear-gradient(to right, ${scaleBright(
     0
   )}, ${scaleBright(0.5)}, ${scaleBright(1)})`
-
   // Saturation Scale
   const noSat = color.set("hsl.s", 0)
   const fullSat = color.set("hsl.s", 1)
@@ -120,6 +121,26 @@ function resetInputs() {
   })
 }
 
+function copyToClipboard(hex) {
+  const el = document.createElement("textarea")
+  el.value = hex.innerText
+  document.body.appendChild(el)
+  el.select()
+  document.execCommand("copy")
+  document.body.removeChild(el)
+  // Popup Animation
+  const popupBox = popup.children[0]
+  popup.classList.add("active")
+  popupBox.classList.add("active")
+}
+
+function openAdjustmentPanel(index) {
+  sliderContainers[index].classList.toggle("active")
+}
+
+function closeAdjustmentPanel(index) {
+  sliderContainers[index].classList.remove("active")
+}
 // Event Listeners
 sliders.forEach((slider) => {
   slider.addEventListener("input", hslControls)
@@ -128,5 +149,29 @@ sliders.forEach((slider) => {
 colorDivs.forEach((div, index) => {
   div.addEventListener("change", () => {
     updateTextUI(index)
+  })
+})
+
+currentHexes.forEach((hex) => {
+  hex.addEventListener("click", () => {
+    copyToClipboard(hex)
+  })
+})
+
+popup.addEventListener("transitionend", () => {
+  const popupBox = popup.children[0]
+  popup.classList.remove("active")
+  popupBox.classList.remove("active")
+})
+
+adjustButton.forEach((button, index) => {
+  button.addEventListener("click", () => {
+    openAdjustmentPanel(index)
+  })
+})
+
+closeAdjustments.forEach((button, index) => {
+  button.addEventListener("click", () => {
+    closeAdjustmentPanel(index)
   })
 })
