@@ -223,8 +223,7 @@ const saveInput = document.querySelector(".save-container input")
 const libraryContainer = document.querySelector(".library-container")
 const libraryButton = document.querySelector(".library")
 const closeLibraryButton = document.querySelector(".close-library")
-// Event Listeners
-
+//Event Listeners
 saveButton.addEventListener("click", openPalette)
 closeSave.addEventListener("click", closePalette)
 submitSave.addEventListener("click", savePalette)
@@ -236,23 +235,29 @@ function openPalette(e) {
   saveContainer.classList.add("active")
   popup.classList.add("active")
 }
-
 function closePalette(e) {
   const popup = saveContainer.children[0]
   saveContainer.classList.remove("active")
-  popup.classList.remove("active")
+  popup.classList.add("remove")
 }
-
 function savePalette(e) {
-  const popup = saveContainer.children[0]
   saveContainer.classList.remove("active")
-  popup.classList.add("active")
+  popup.classList.remove("active")
   const name = saveInput.value
   const colors = []
   currentHexes.forEach((hex) => {
     colors.push(hex.innerText)
   })
-  // Generate Object
+  //Generate Object
+  //*1
+  // const paletteObjects = JSON.parse(localStorage.getItem("palettes"));
+  // let paletteNum;
+  // if (paletteObjects) {
+  //   paletteNum = paletteObjects.length;
+  // } else {
+  //   paletteNum = savedPalettes.length;
+  // }
+
   let paletteNum
   const paletteObjects = JSON.parse(localStorage.getItem("palettes"))
   if (paletteObjects) {
@@ -263,10 +268,10 @@ function savePalette(e) {
 
   const paletteObj = { name, colors, num: paletteNum }
   savedPalettes.push(paletteObj)
-  // Save to Local Storage
-  saveToLocal(paletteObj)
+  //Save to localStorage
+  savetoLocal(paletteObj)
   saveInput.value = ""
-  // Generate palette for Library
+  //Generate the palette for Library
   const palette = document.createElement("div")
   palette.classList.add("custom-palette")
   const title = document.createElement("h4")
@@ -283,8 +288,9 @@ function savePalette(e) {
   paletteButton.classList.add(paletteObj.num)
   paletteButton.innerText = "Select"
 
-  // Attach event to the button
+  //Attach event to the btn
   paletteButton.addEventListener("click", (e) => {
+    closeLibrary()
     const paletteIndex = e.target.classList[1]
     initialColors = []
     savedPalettes[paletteIndex].colors.forEach((color, index) => {
@@ -294,7 +300,6 @@ function savePalette(e) {
       checkTextContrast(color, text)
       updateTextUI(index)
     })
-    closeLibrary()
     resetInputs()
   })
 
@@ -302,10 +307,10 @@ function savePalette(e) {
   palette.appendChild(title)
   palette.appendChild(preview)
   palette.appendChild(paletteButton)
-  libraryContainer.children[0].append(palette)
+  libraryContainer.children[0].appendChild(palette)
 }
 
-function saveToLocal(paletteObj) {
+function savetoLocal(paletteObj) {
   let localPalettes
   if (localStorage.getItem("palettes") === null) {
     localPalettes = []
@@ -315,13 +320,11 @@ function saveToLocal(paletteObj) {
   localPalettes.push(paletteObj)
   localStorage.setItem("palettes", JSON.stringify(localPalettes))
 }
-
 function openLibrary() {
   const popup = libraryContainer.children[0]
   libraryContainer.classList.add("active")
   popup.classList.add("active")
 }
-
 function closeLibrary() {
   const popup = libraryContainer.children[0]
   libraryContainer.classList.remove("active")
@@ -337,8 +340,7 @@ function getLocal() {
     // *2
 
     savedPalettes = [...paletteObjects]
-    // console.log(savedPalettes)
-    paletteObjects.forEach((paletteObj, index) => {
+    paletteObjects.forEach((paletteObj) => {
       //Generate the palette for Library
       const palette = document.createElement("div")
       palette.classList.add("custom-palette")
@@ -346,23 +348,20 @@ function getLocal() {
       title.innerText = paletteObj.name
       const preview = document.createElement("div")
       preview.classList.add("small-preview")
-
       paletteObj.colors.forEach((smallColor) => {
         const smallDiv = document.createElement("div")
         smallDiv.style.backgroundColor = smallColor
         preview.appendChild(smallDiv)
       })
-
-      const paletteBtn = document.createElement("button")
-      paletteBtn.classList.add("pick-palette-button")
-      // paletteBtn.classList.add("paletteObj-num")
-      paletteBtn.innerText = "Select"
+      const paletteButton = document.createElement("button")
+      paletteButton.classList.add("pick-palette-button")
+      paletteButton.classList.add(paletteObj.num)
+      paletteButton.innerText = "Select"
 
       //Attach event to the btn
-      paletteBtn.addEventListener("click", (e) => {
+      paletteButton.addEventListener("click", (e) => {
         closeLibrary()
-        console.log(e.target)
-        const paletteIndex = e.target.index
+        const paletteIndex = e.target.classList[1]
         initialColors = []
         paletteObjects[paletteIndex].colors.forEach((color, index) => {
           initialColors.push(color)
@@ -377,7 +376,7 @@ function getLocal() {
       //Append to Library
       palette.appendChild(title)
       palette.appendChild(preview)
-      palette.appendChild(paletteBtn)
+      palette.appendChild(paletteButton)
       libraryContainer.children[0].appendChild(palette)
     })
   }
